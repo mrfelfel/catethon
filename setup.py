@@ -47,7 +47,7 @@ class TempWorkDir:
 API_REF_URL = 'https://tl.telethon.dev/'
 
 GENERATOR_DIR = Path('telethon_generator')
-LIBRARY_DIR = Path('telethon')
+LIBRARY_DIR = Path('catethon')
 
 ERRORS_IN = GENERATOR_DIR / 'data/errors.csv'
 ERRORS_OUT = LIBRARY_DIR / 'errors/rpcerrorlist.py'
@@ -177,9 +177,9 @@ def main(argv):
         # (Re)generate the code to make sure we don't push without it
         generate(['tl', 'errors'])
 
-        # Try importing the telethon module to assert it has no errors
+        # Try importing the catethon module to assert it has no errors
         try:
-            import telethon
+            import catethon
         except Exception as e:
             print('Packaging for PyPi aborted, importing the module failed.')
             print(e)
@@ -208,7 +208,7 @@ def main(argv):
         with open('README.rst', 'r', encoding='utf-8') as f:
             long_description = f.read()
 
-        with open('telethon/version.py', 'r', encoding='utf-8') as f:
+        with open('catethon/version.py', 'r', encoding='utf-8') as f:
             version = re.search(r"^__version__\s*=\s*'(.*)'.*$",
                                 f.read(), flags=re.MULTILINE).group(1)
         setup(

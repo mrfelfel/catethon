@@ -30,7 +30,8 @@ pip install "git+https://github.com/mrfelfel/catethon.git@catethon/main#egg=cate
 pip install "catethon[socks] @ git+https://github.com/mrfelfel/catethon.git@catethon/main"
 ```
 
-cat-server takes it as the git submodule at `vendor/catethon`; see that repo's
+cat-server takes it as the git submodule at `catethon/` (repo root, beside
+`td/` -- a root `vendor/` would flip Go into vendor mode); see that repo's
 `docs/catethon.md` for the decision chain and which services are meant to use
 it.
 

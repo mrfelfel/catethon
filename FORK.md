@@ -11,7 +11,7 @@ default, not a runbook. It is maintained in
 someone outside the project can `pip install` it from git and log in.
 
 - Upstream: Telethon 1.46.0, layer 233, MIT
-- This fork: `1.46.0+catethon`, MIT, import package `catethon`
+- This fork: `1.46.1` (on a 1.46.0 base), MIT, import package `catethon`
 - Rebase log and verification: [`UPSTREAM_SYNC.md`](UPSTREAM_SYNC.md)
 
 ## What the fork changes

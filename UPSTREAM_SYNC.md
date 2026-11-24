@@ -37,7 +37,7 @@ becomes reachable, in which case prefer Codeberg and record the tag commit.
 |---|---|
 | `telethon/` -> `catethon/` | Import package renamed so the fork installs beside, never over, an upstream `telethon`. 42 files carried absolute self-imports; all rewritten. |
 | `pyproject.toml` packaging paths | `name`, `[tool.hatch.version] path`, sdist `include` follow the rename. |
-| Distribution metadata | Name `catethon`, version `1.46.0+catethon`, MIT kept, upstream author kept. |
+| Distribution metadata | Name `catethon`, version `1.46.1`, MIT kept, upstream author kept. The `+catethon` local segment was dropped: PyPI refuses local versions. |
 | `key.startswith("telethon.")` in `client/telegrambaseclient.py` | Now `"catethon."`. The base logger already derives from `__name__`, so only this child-key strip needed the new spelling. |
 | `catethon/cat/` | Our helpers. Never imported by upstream code. |
 | `catethon/cat/rsapad.py` | RSA-PAD key-exchange block. Cat Messenger's server rejects upstream's sha1 form with `-404 "hash mismatch"`; patched in by assignment so upstream files stay clean. |

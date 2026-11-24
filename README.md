@@ -13,25 +13,32 @@ defaults, so that connecting is one line instead of a runbook.
 
 - Import name: `catethon`
 - Distribution name: `catethon`
-- Version: `1.46.0+catethon` (upstream Telethon 1.46.0, layer 233)
+- Version: `1.46.1` (Telethon 1.46.0 base, layer 233)
 - Licence: MIT (upstream's, unchanged — see [`NOTICE`](NOTICE))
 - Cat Messenger: <https://catroom.ir> · source: <https://github.com/mrfelfel/catethon>
 
 ## Install
 
-catethon is not on PyPI. Install it from this repository:
-
 ```bash
-pip install "catethon @ git+https://github.com/mrfelfel/catethon.git@catethon/main"
+pip install catethon
 ```
 
 Behind a SOCKS proxy (many networks need one to reach Cat Messenger):
 
 ```bash
-pip install "catethon[socks] @ git+https://github.com/mrfelfel/catethon.git@catethon/main"
+pip install "catethon[socks]"
 ```
 
 Python 3.9 or newer.
+
+If PyPI is unreachable, install straight from the repository instead:
+
+```bash
+pip install "catethon @ git+https://github.com/mrfelfel/catethon.git@catethon/main"
+```
+
+Which channel is live is in [`PUBLISHING.md`](PUBLISHING.md); it also records
+what a release needs, so the two do not drift apart.
 
 ## Connect to Cat Messenger
 

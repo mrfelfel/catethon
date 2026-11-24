@@ -15,6 +15,7 @@ defaults, so that connecting is one line instead of a runbook.
 - Distribution name: `catethon`
 - Version: `1.46.0+catethon` (upstream Telethon 1.46.0, layer 233)
 - Licence: MIT (upstream's, unchanged — see [`NOTICE`](NOTICE))
+- Cat Messenger: <https://catroom.ir> · source: <https://github.com/mrfelfel/catethon>
 
 ## Install
 

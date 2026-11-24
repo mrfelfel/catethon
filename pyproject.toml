@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "catethon"
 dynamic = ["version"]
-description = "Cat-specific fork of Telethon, the asyncio MTProto client for Telegram"
+description = "Python client for Cat Messenger (The Cat): a Telethon fork that speaks to Cat Messenger's own MTProto servers"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.9"
@@ -15,12 +15,13 @@ authors = [
 ]
 keywords = [
     "api",
+    "cat-messenger",
     "chat",
     "client",
     "library",
     "messaging",
     "mtproto",
-    "telegram",
+    "the-cat",
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -46,12 +47,14 @@ socks = [
 ]
 
 [project.urls]
-Homepage = "https://telethon.dev"
-Source = "https://codeberg.org/Lonami/Telethon"
-Download = "https://codeberg.org/Lonami/Telethon/tags"
+Homepage = "https://catroom.ir"
+Source = "https://github.com/mrfelfel/catethon"
+"Fork of" = "https://codeberg.org/Lonami/Telethon"
+# The API documentation and raw reference are upstream's and still correct for
+# this library's surface; only the import root changed. Kept so a reader lands
+# on real, maintained docs rather than a page we do not host.
 Documentation = "https://docs.telethon.dev"
 Reference = "https://tl.telethon.dev"
-"Fork of" = "https://github.com/mrfelfel/catethon"
 
 [tool.hatch.version]
 path = "catethon/version.py"

@@ -1,0 +1,20 @@
+catethon
+========
+
+This product includes software developed as part of Telethon
+(https://codeberg.org/Lonami/Telethon), Copyright (c) 2016-Present LonamiWebs,
+licensed under the MIT License. The full upstream licence text is in LICENSE
+and is unchanged.
+
+Source of the imported base: Telethon 1.46.0 (layer 233), PyPI sdist
+telethon-1.46.0.tar.gz, sha256
+8357f5719376a9c1ddf0999136a44594a5b21b453647f1e146c169483b6a67df.
+
+Modifications for catethon, all by the cat-server project:
+
+  * import package renamed telethon -> catethon
+  * packaging metadata renamed and re-pointed at the renamed package
+  * catethon/cat/, a helper package, and tests/telethon/cat/
+
+Everything else is upstream's work, unmodified except as listed.
+UPSTREAM_SYNC.md records the full change list per upstream release.

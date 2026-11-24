@@ -1,0 +1,8 @@
+# Pinned where an unpinned upgrade can change behaviour we verify.
+#
+# pytest-asyncio 0.23+ changed default event-loop handling; the upstream suite
+# was written against the older behaviour and three client tests already drift
+# on 1.46 source regardless. Pin so a rebase's green/red set is stable.
+-r requirements.txt
+pytest==8.3.5
+pytest-asyncio==0.24.0

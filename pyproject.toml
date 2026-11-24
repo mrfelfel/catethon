@@ -3,14 +3,15 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "Telethon"
+name = "catethon"
 dynamic = ["version"]
-description = "Full-featured Telegram client library for Python 3"
+description = "Cat-specific fork of Telethon, the asyncio MTProto client for Telegram"
 readme = "README.rst"
 license = "MIT"
-requires-python = ">=3.5"
+requires-python = ">=3.9"
 authors = [
     { name = "Lonami Exo", email = "totufals@hotmail.com" },
+    { name = "CatGram / the cat project" },
 ]
 keywords = [
     "api",
@@ -23,12 +24,9 @@ keywords = [
 ]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.5",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
     "Topic :: Communications :: Chat",
 ]
 dependencies = [
@@ -40,6 +38,12 @@ dependencies = [
 cryptg = [
     "cryptg",
 ]
+# catethon.cat.proxy honours PROXY/SOCKS5_PROXY the way the Go fetchers do;
+# Telethon needs a SOCKS client for a proxy= argument, upstream keeps it out of
+# the base deps, so it rides an extra named after what it enables.
+socks = [
+    "python-socks[asyncio]",
+]
 
 [project.urls]
 Homepage = "https://telethon.dev"
@@ -47,6 +51,7 @@ Source = "https://codeberg.org/Lonami/Telethon"
 Download = "https://codeberg.org/Lonami/Telethon/tags"
 Documentation = "https://docs.telethon.dev"
 Reference = "https://tl.telethon.dev"
+"Fork of" = "https://github.com/mrfelfel/catethon"
 
 [tool.hatch.version]
 path = "catethon/version.py"
@@ -55,4 +60,3 @@ path = "catethon/version.py"
 include = [
     "/catethon",
 ]
-[tool.hatch.build.hooks.custom]

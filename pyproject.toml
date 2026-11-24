@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "catethon"
 dynamic = ["version"]
 description = "Cat-specific fork of Telethon, the asyncio MTProto client for Telegram"
-readme = "README.rst"
+readme = "README.md"
 license = "MIT"
 requires-python = ">=3.9"
 authors = [

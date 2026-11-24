@@ -1,0 +1,17 @@
+# Generated code (upstream gitignores these; the fork commits the generated TL,
+# so this only matters if someone runs the generator over the tree).
+/dist/
+/build/
+*.egg-info/
+
+# Python bytecode and caches.
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local session files and media. A session string is a login; never commit one.
+*.session
+*.session-journal
+/usermedia/

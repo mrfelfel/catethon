@@ -40,6 +40,7 @@ becomes reachable, in which case prefer Codeberg and record the tag commit.
 | Distribution metadata | Name `catethon`, version `1.46.0+catethon`, MIT kept, upstream author kept. |
 | `key.startswith("telethon.")` in `client/telegrambaseclient.py` | Now `"catethon."`. The base logger already derives from `__name__`, so only this child-key strip needed the new spelling. |
 | `catethon/cat/` | Our helpers. Never imported by upstream code. |
+| `catethon/cat/rsapad.py` | RSA-PAD key-exchange block. Cat Messenger's server rejects upstream's sha1 form with `-404 "hash mismatch"`; patched in by assignment so upstream files stay clean. |
 | `tests/telethon/cat/` | Tests for `catethon/cat/` only. Survives a wholesale test-tree replace. |
 
 ### Deliberately left alone
@@ -105,3 +106,25 @@ produces. Keep both halves in step -- the format version byte is `'1'` on both.
   layer 233; `tests/telethon/cat` 23 passed; full subset 55 passed, 3 known
   upstream drifts; Go `td/session` decoded `catethon.cat.string_session_for`
   output with DC, IP, port and 256-byte key intact
+
+### 2026-11-24 — public client for Cat Messenger
+
+The fork is now the public Python client for Cat Messenger ("The Cat"), not just
+an internal helper: `README.md` targets outside users and `catethon/cat/server.py`
+defaults to the production edge so `prepare()` connects on install.
+
+Connect values, all verified against the live server on 2026-11-24:
+
+- host `62.220.127.238`, port `30001`, DC `2`, TCP (abridged and full both
+  accepted on the plain port; `ConnectionTcpObfuscated` at the wrapper level
+  works too)
+- server public key packaged at `catethon/cat/keys/thecat-prod-rsa.pub`,
+  SHA-256 `7514f405f0c0969b5cc0301c6cfff9ad3d507bdb4471db5397f3e7447da60395`
+- the live server's resPQ announces fingerprint `0x19a8af0a0c89b11a`, which is
+  what `catethon.crypto.rsa._compute_fingerprint` derives from the packaged key —
+  a direct check that the baked key is the server's key, not just a doc copy
+- `client.connect()` completes (new auth key created); `is_user_authorized()` is
+  False until a phone login, as expected
+
+The handshake only completes with RSA-PAD, not upstream's sha1 scheme; see the
+commit message for `catethon/cat/rsapad.py` and `td/crypto/rsa_pad.go`.

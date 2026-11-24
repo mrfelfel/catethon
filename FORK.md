@@ -1,8 +1,14 @@
-# catethon
+# catethon — fork notes for maintainers
 
-catethon is a fork of **[Telethon](https://codeberg.org/Lonami/Telethon)**, the
-asyncio MTProto client for Telegram, maintained for the
-[cat-server](https://github.com/mrfelfel/cat-server) project.
+For what catethon is and how to use it, read [`README.md`](README.md) first.
+This file is the maintainer's view: what the fork changes, what it leaves alone,
+and why.
+
+**catethon is the Python client for Cat Messenger (`The Cat`), for anyone who
+wants to connect to it** — the fork exists so that connecting is a working
+default, not a runbook. It is maintained in
+[cat-server](https://github.com/mrfelfel/cat-server), but it is a general client:
+someone outside the project can `pip install` it from git and log in.
 
 - Upstream: Telethon 1.46.0, layer 233, MIT
 - This fork: `1.46.0+catethon`, MIT, import package `catethon`
@@ -10,55 +16,64 @@ asyncio MTProto client for Telegram, maintained for the
 
 ## What the fork changes
 
-Almost nothing, on purpose. The tree is upstream's, mechanically renamed from
-`telethon` to `catethon` so it installs beside an upstream Telethon instead of
-over it. The only original code is `catethon/cat/`: small helpers that read the
-api_id/api_hash, proxy and session values the project's Go tools already use,
-and turn a StringSession into one the project's Go parser provably accepts.
+The upstream tree is mechanically renamed from `telethon` to `catethon` so it
+installs beside an upstream Telethon instead of over it. The original code, all
+in `catethon/cat/`, makes the client work against Cat Messenger:
 
-`catethon.cat` is never imported by upstream code, which is what keeps a rebase
-onto a future Telethon mechanical. If you are adding a helper that must be
-called from inside the client, it belongs in cat-server, not here.
+| module | what it does | why it must be ours |
+|---|---|---|
+| `server` | host, port, DC id, transport and the server's public key | Cat Messenger runs its own MTProto edge; upstream only knows Telegram's cloud |
+| `rsapad` | the RSA-PAD (OAEP-style) key-exchange block | **the server rejects upstream's sha1 form with `-404 "hash mismatch"`** — see below |
+| `config` | api_id/api_hash, device name, proxy from env | one source, shared with the project's Go tools |
+| `session` | validate a StringSession against the format the Go reader decodes | the one wire format two languages must agree on |
+| `proxy` | URL → Telethon proxy tuple | the Go tools document `socks5h://`; Telethon wants an object |
 
-## Install
+`catethon.cat` is never imported by upstream code. That is what keeps a rebase
+onto a future Telethon mechanical.
 
-catethon is not on PyPI. Install from the fork:
+### The one non-obvious change: RSA-PAD
+
+Upstream Telethon encrypts `p_q_inner_data` with the original MTProto scheme
+(`sha1(data) + data + random`). Cat Messenger's server is built on Telegram's
+newer auth_key spec, which `td/crypto/rsa_pad.go` calls `RSAPad`:
+
+```
+data_with_padding := data + random, 192 bytes, data <= 144
+data_pad_reversed := BYTE_REVERSE(data_with_padding)
+data_with_hash    := data_pad_reversed + SHA256(temp_key + data_with_padding)
+aes_encrypted     := AES256_IGE(data_with_hash, temp_key, 0)
+temp_key_xor      := temp_key XOR SHA256(aes_encrypted)
+key_aes_encrypted := temp_key_xor + aes_encrypted        (256 bytes)
+encrypted_data    := RSA(key_aes_encrypted, server_pubkey)
+```
+
+Sending the sha1 form gets `-404 "hash mismatch"`: the server decrypts, reads a
+hash it cannot match, and drops the handshake. `catethon.cat.rsapad` implements
+the newer block and `patch_authenticator()` installs it **by assignment** into
+`network/authenticator.py`'s `rsa.encrypt` call site — upstream source is
+untouched, so a rebase replaces files cleanly. If a future upstream changes that
+call signature, the rebase check below catches it.
+
+Verified 2026-11-24: with the PAD encoder the server answers `ServerDHParamsOk`
+and a full `client.connect()` to `62.220.127.238:30001` completes; without it,
+the handshake fails at `ReqDHParams`.
+
+### What is deliberately not changed
+
+- Product name and URLs in prose and docstrings — attribution; a `catethon.dev`
+  link would not resolve.
+- The TL schema (layer 233 as shipped) — regenerating needs `telethon_generator/`,
+  which the sdist does not contain.
+- Upstream code beyond the rename; the custom hatch build-hook stanza removed so
+  `pip install .` works at all (the sdist ships no `hatch_build.py`).
+
+## Rebase check
 
 ```bash
-pip install "git+https://github.com/mrfelfel/catethon.git@catethon/main#egg=catethon"
-# with the SOCKS extra, for outbound sessions behind a proxy:
-pip install "catethon[socks] @ git+https://github.com/mrfelfel/catethon.git@catethon/main"
+python -m pytest tests/telethon/cat -q     # our helpers, incl. the PAD round-trip
 ```
 
-cat-server takes it as the git submodule at `catethon/` (repo root, beside
-`td/` -- a root `vendor/` would flip Go into vendor mode); see that repo's
-`docs/catethon.md` for the decision chain and which services are meant to use
-it.
-
-## Use
-
-```python
-from catethon import TelegramClient
-from catethon.cat import from_env, parse_proxy, session_from_env
-
-settings = from_env()                       # api_id/api_hash, proxy, device name
-session = session_from_env()                # CATETHON_SESSION / TELETHON_SESSION
-async with TelegramClient(
-    session or 'giftfetch',
-    settings.api_id,
-    settings.api_hash,
-    proxy=parse_proxy(settings.proxy_url),
-    **settings.client_kwargs(),
-) as client:
-    ...
-```
-
-Everything Telethon documents still works; only the import root changed. The
-upstream documentation, examples and `tl.telethon.dev` reference all apply as
-written, substituting `catethon` for `telethon` in imports.
-
-## Licence
-
-MIT, identical to upstream. The upstream copyright notice is preserved in
-[`LICENSE`](LICENSE); the fork does not relicense anything. See
-[`NOTICE`](NOTICE) for the provenance statement MIT requires us to keep.
+The PAD patch depends on `network/authenticator.py` calling `rsa.encrypt(
+fingerprint, data)` with that exact name and arity. If a rebase renames it, that
+test and a live `connect()` both fail loudly — fix `rsapad.patch_authenticator`,
+not upstream.
